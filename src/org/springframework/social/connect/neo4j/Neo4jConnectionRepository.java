@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.security.crypto.encrypt.TextEncryptor;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionData;
 import org.springframework.social.connect.ConnectionFactoryLocator;
@@ -21,14 +20,12 @@ import org.springframework.util.MultiValueMap;
 public class Neo4jConnectionRepository implements ConnectionRepository {
 
 	private final String userId;
-	private final TextEncryptor textEncryptor;
 	private final ConnectionService connectionService;
 	private final ConnectionFactoryLocator connectionFactoryLocator;
 	
-	public Neo4jConnectionRepository(String userId, ConnectionService connectionService, ConnectionFactoryLocator connectionFactoryLocator, TextEncryptor textEncryptor) {
+	public Neo4jConnectionRepository(String userId, ConnectionService connectionService, ConnectionFactoryLocator connectionFactoryLocator) {
 		this.userId = userId;
 		this.connectionService = connectionService;
-		this.textEncryptor = textEncryptor;
 		this.connectionFactoryLocator = connectionFactoryLocator;
 	}
 	
@@ -73,6 +70,7 @@ public class Neo4jConnectionRepository implements ConnectionRepository {
 			throw new IllegalArgumentException("Unable to execute find: no providerUsers provided");
 		}
 		
+		System.out.println("\n\n NOT YET IMPLEMENTED");
 		return null;
 	}
 
