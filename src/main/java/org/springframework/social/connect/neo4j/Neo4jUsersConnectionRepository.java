@@ -9,24 +9,28 @@ import org.springframework.social.connect.ConnectionKey;
 import org.springframework.social.connect.ConnectionRepository;
 import org.springframework.social.connect.UsersConnectionRepository;
 
-public class Neo4jUsersConnectionRepository implements UsersConnectionRepository {
+public class Neo4jUsersConnectionRepository implements
+		UsersConnectionRepository {
 
 	private final ConnectionService connectionService;
 	private final ConnectionFactoryLocator connectionFactoryLocator;
-	
-	public Neo4jUsersConnectionRepository(ConnectionService connectionService, ConnectionFactoryLocator connectionFactoryLocator) {
+
+	public Neo4jUsersConnectionRepository(ConnectionService connectionService,
+			ConnectionFactoryLocator connectionFactoryLocator) {
 		this.connectionService = connectionService;
 		this.connectionFactoryLocator = connectionFactoryLocator;
 	}
-	
+
 	@Override
 	public List<String> findUserIdsWithConnection(Connection<?> connection) {
 		ConnectionKey key = connection.getKey();
-		return connectionService.getUserIds(key.getProviderId(), key.getProviderUserId());
+		return connectionService.getUserIds(key.getProviderId(),
+				key.getProviderUserId());
 	}
 
 	@Override
-	public Set<String> findUserIdsConnectedTo(String providerId, Set<String> providerUserIds) {
+	public Set<String> findUserIdsConnectedTo(String providerId,
+			Set<String> providerUserIds) {
 		return connectionService.getUserIds(providerId, providerUserIds);
 	}
 
@@ -35,8 +39,9 @@ public class Neo4jUsersConnectionRepository implements UsersConnectionRepository
 		if (userId == null) {
 			throw new IllegalArgumentException("userId cannot be null");
 		}
-		
-		return new Neo4jConnectionRepository(userId, connectionService, connectionFactoryLocator);
+
+		return new Neo4jConnectionRepository(userId, connectionService,
+				connectionFactoryLocator);
 	}
 
 }

@@ -18,23 +18,19 @@ public interface ConnectionService {
 
 	void remove(String userId, String providerId);
 
-	Connection<?> getPrimaryConnection(String userId,
-			String providerId);
+	Connection<?> getPrimaryConnection(String userId, String providerId);
 
-	Connection<?> getConnection(String userId,
-			String providerId, String providerUserId);
+	Connection<?> getConnection(String userId, String providerId,
+			String providerUserId);
 
 	List<Connection<?>> getConnections(String userId);
 
-	List<Connection<?>> getConnections(String userId,
-			String providerId);
+	List<Connection<?>> getConnections(String userId, String providerId);
 
 	List<Connection<?>> getConnections(String userId,
 			MultiValueMap<String, String> providerUsers);
 
-	Set<String> getUserIds(String providerId,
-			Set<String> providerUserIds);
+	Set<String> getUserIds(String providerId, Set<String> providerUserIds);
 
-	List<String> getUserIds(String providerId,
-			String providerUserId);
+	List<String> getUserIds(String providerId, String providerUserId);
 }

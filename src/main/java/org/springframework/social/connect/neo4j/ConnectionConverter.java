@@ -6,31 +6,33 @@ import org.springframework.social.connect.ConnectionData;
 import org.springframework.social.connect.ConnectionFactory;
 import org.springframework.social.connect.ConnectionFactoryLocator;
 
-
 public class ConnectionConverter {
-	
+
 	private final TextEncryptor textEncryptor;
 	private final ConnectionFactoryLocator connectionFactoryLocator;
-	
-	public ConnectionConverter (ConnectionFactoryLocator connectionFactoryLocator, TextEncryptor textEncryptor) {
+
+	public ConnectionConverter(
+			ConnectionFactoryLocator connectionFactoryLocator,
+			TextEncryptor textEncryptor) {
 		this.textEncryptor = textEncryptor;
 		this.connectionFactoryLocator = connectionFactoryLocator;
 	}
-	
+
 	public Connection<?> convert(SocialConnection connection) {
 		if (connection == null) {
 			return null;
 		}
-		
+
 		ConnectionData connectionData = fillConnectionData(connection);
-		ConnectionFactory<?> connectionFactory = connectionFactoryLocator.getConnectionFactory(connectionData.getProviderId());
-		
+		ConnectionFactory<?> connectionFactory = connectionFactoryLocator
+				.getConnectionFactory(connectionData.getProviderId());
+
 		return connectionFactory.createConnection(connectionData);
 	}
-	
+
 	public SocialConnection convert(Connection<?> connection) {
 		ConnectionData data = connection.createData();
-		
+
 		SocialConnection userConnection = new SocialConnection();
 		userConnection.setProviderId(data.getProviderId());
 		userConnection.setProviderUserId(data.getProviderUserId());
@@ -41,25 +43,23 @@ public class ConnectionConverter {
 		userConnection.setSecret(encrypt(data.getSecret()));
 		userConnection.setRefreshToken(encrypt(data.getRefreshToken()));
 		userConnection.setExpireTime(data.getExpireTime());
-		
+
 		return userConnection;
 	}
-	
+
 	private ConnectionData fillConnectionData(SocialConnection connection) {
-		return new ConnectionData(
-				connection.getProviderId(), 
-				connection.getProviderUserId(), 
-				connection.getDisplayName(), 
-				connection.getProfileUrl(), 
-				connection.getImageUrl(), 
-				decrypt(connection.getAccessToken()), 
-				decrypt(connection.getSecret()), 
-				decrypt(connection.getRefreshToken()), 
+		return new ConnectionData(connection.getProviderId(),
+				connection.getProviderUserId(), connection.getDisplayName(),
+				connection.getProfileUrl(), connection.getImageUrl(),
+				decrypt(connection.getAccessToken()),
+				decrypt(connection.getSecret()),
+				decrypt(connection.getRefreshToken()),
 				connection.getExpireTime());
 	}
-	
+
 	private String decrypt(String encryptedText) {
-		return encryptedText != null ? textEncryptor.decrypt(encryptedText) : encryptedText;
+		return encryptedText != null ? textEncryptor.decrypt(encryptedText)
+				: encryptedText;
 	}
 
 	private String encrypt(String text) {

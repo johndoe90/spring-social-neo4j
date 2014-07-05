@@ -1,5 +1,6 @@
 package org.springframework.social.connect.neo4j;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -22,32 +23,35 @@ public class Neo4jConnectionRepository implements ConnectionRepository {
 	private final String userId;
 	private final ConnectionService connectionService;
 	private final ConnectionFactoryLocator connectionFactoryLocator;
-	
-	public Neo4jConnectionRepository(String userId, ConnectionService connectionService, ConnectionFactoryLocator connectionFactoryLocator) {
+
+	public Neo4jConnectionRepository(String userId,
+			ConnectionService connectionService,
+			ConnectionFactoryLocator connectionFactoryLocator) {
 		this.userId = userId;
 		this.connectionService = connectionService;
 		this.connectionFactoryLocator = connectionFactoryLocator;
 	}
-	
+
 	@Override
 	public MultiValueMap<String, Connection<?>> findAllConnections() {
 		List<Connection<?>> results = connectionService.getConnections(this.userId);
 		MultiValueMap<String, Connection<?>> connections = new LinkedMultiValueMap<>();
 		Set<String> providerIds = this.connectionFactoryLocator.registeredProviderIds();
-		
-		for(String providerId : providerIds) {
-			connections.put(providerId, Collections.<Connection<?>>emptyList());
+
+		for (String providerId : providerIds) {
+			connections
+					.put(providerId, Collections.<Connection<?>> emptyList());
 		}
-		
-		for(Connection<?> connection : results) {
+
+		for (Connection<?> connection : results) {
 			String providerId = connection.getKey().getProviderId();
 			if (connections.get(providerId).size() == 0) {
 				connections.put(providerId, new LinkedList<Connection<?>>());
 			}
-			
+
 			connections.add(providerId, connection);
 		}
-		
+
 		return connections;
 	}
 
@@ -63,15 +67,32 @@ public class Neo4jConnectionRepository implements ConnectionRepository {
 		return (List<Connection<A>>) connections;
 	}
 
-	//NOT YET IMPLEMENTED!!!
 	@Override
 	public MultiValueMap<String, Connection<?>> findConnectionsToUsers(MultiValueMap<String, String> providerUserIds) {
 		if (providerUserIds == null || providerUserIds.isEmpty()) {
-			throw new IllegalArgumentException("Unable to execute find: no providerUsers provided");
+			throw new IllegalArgumentException(
+					"Unable to execute find: no providerUsers provided");
+		}
+
+		List<Connection<?>> resultList = connectionService.getConnections(this.userId, providerUserIds);
+		MultiValueMap<String, Connection<?>> connectionsForUsers = new LinkedMultiValueMap<String, Connection<?>>();
+		for (Connection<?> connection : resultList) {
+			String providerId = connection.getKey().getProviderId();
+			List<String> userIds = providerUserIds.get(providerId);
+			List<Connection<?>> connections = connectionsForUsers.get(providerId);
+			if (connections == null) {
+				connections = new ArrayList<Connection<?>>(userIds.size());
+				for (int i = 0; i < userIds.size(); i++) {
+					connections.add(null);
+				}
+				connectionsForUsers.put(providerId, connections);
+			}
+			String providerUserId = connection.getKey().getProviderUserId();
+			int connectionIndex = userIds.indexOf(providerUserId);
+			connections.set(connectionIndex, connection);
 		}
 		
-		System.out.println("\n\n NOT YET IMPLEMENTED");
-		return null;
+		return connectionsForUsers;
 	}
 
 	@Override
@@ -80,14 +101,14 @@ public class Neo4jConnectionRepository implements ConnectionRepository {
 		if (connection == null) {
 			throw new NoSuchConnectionException(connectionKey);
 		}
-		
+
 		return connection;
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public <A> Connection<A> getConnection(Class<A> apiType, String providerUserId) {
-		String providerId = getProviderId(apiType);		
+		String providerId = getProviderId(apiType);
 		return (Connection<A>) getConnection(new ConnectionKey(providerId, providerUserId));
 	}
 
@@ -99,7 +120,7 @@ public class Neo4jConnectionRepository implements ConnectionRepository {
 		if (connection == null) {
 			throw new NotConnectedException(providerId);
 		}
-		
+
 		return connection;
 	}
 
@@ -139,7 +160,7 @@ public class Neo4jConnectionRepository implements ConnectionRepository {
 	private <A> String getProviderId(Class<A> apiType) {
 		return this.connectionFactoryLocator.getConnectionFactory(apiType).getProviderId();
 	}
-	
+
 	private Connection<?> findPrimaryConnection(String providerId) {
 		return connectionService.getPrimaryConnection(userId, providerId);
 	}

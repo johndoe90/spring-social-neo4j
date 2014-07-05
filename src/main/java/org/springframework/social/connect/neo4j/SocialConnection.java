@@ -11,29 +11,29 @@ public class SocialConnection {
 
 	@GraphId
 	private Long graphId;
-	
+
 	@Indexed
 	private String providerId;
-	
+
 	@Indexed
 	private String providerUserId;
-	
+
 	@Range(min = 1, max = 9999)
 	private Integer rank;
-	
+
 	private String displayName;
-	
+
 	private String profileUrl;
-	
+
 	private String imageUrl;
-	
+
 	@NotEmpty
 	private String accessToken;
-	
+
 	private String secret;
-	
+
 	private String refreshToken;
-	
+
 	private Long expireTime;
 
 	public Long getGraphId() {
