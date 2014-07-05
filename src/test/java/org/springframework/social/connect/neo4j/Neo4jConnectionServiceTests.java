@@ -25,6 +25,7 @@ import org.springframework.social.test.FakeProvider;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -66,6 +67,7 @@ public class Neo4jConnectionServiceTests {
 	}
 	
 	@Test
+	@Transactional
 	public void shouldReturnMultipleConnections() {
 		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
 		map.put("twitter", Arrays.asList("@JeffreyHyman", "@joey_ramones"));
@@ -77,6 +79,7 @@ public class Neo4jConnectionServiceTests {
 	}
 	
 	@Test
+	@Transactional
 	public void shouldReturnTheUserIds() {
 		List<String> userIds = service.getUserIds("twitter", "@joey_ramones");
 		assertNotNull(userIds);
@@ -87,6 +90,7 @@ public class Neo4jConnectionServiceTests {
 	}
 
 	@Test
+	@Transactional
 	public void shouldReturnTheSetOfUserIds() {
 		Set<String> providedIds = new HashSet<String>();
 		providedIds.add("joey.ramones");
@@ -101,24 +105,28 @@ public class Neo4jConnectionServiceTests {
 	}
 
 	@Test
+	@Transactional
 	public void shouldReturnTheDefaultRank() {
 		int rank = service.getMaxRank("deedee", "twitter");
 		assertEquals(1, rank);
 	}
 
 	@Test
+	@Transactional
 	public void shouldReturnTheMaxRankForAProvider() {
 		int rank = service.getMaxRank("joey", "twitter");
 		assertEquals(3, rank);
 	}
 
 	@Test
+	@Transactional
 	public void shouldReturnNullIfTheConnectionIsNotFound() {
 		Connection<?> conn = service.getConnection("a", "b", "c");
 		assertNull(conn);
 	}
 
 	@Test
+	@Transactional
 	public void shouldFindPrimaryConnection() {
 		Connection<?> conn = service.getPrimaryConnection("joey", "twitter");
 		assertNotNull("Connection not found", conn);
@@ -127,6 +135,7 @@ public class Neo4jConnectionServiceTests {
 	}
 
 	@Test
+	@Transactional
 	public void shouldFindConnection() {
 		Connection<?> conn = service.getConnection("joey", "facebook", "joey.ramones");
 		assertNotNull("Connection not found", conn);
@@ -135,6 +144,7 @@ public class Neo4jConnectionServiceTests {
 	}
 
 	@Test
+	@Transactional
 	public void shouldListTheConnectionsForUserAndProviderSortByRank() {
 		List<Connection<?>> connections = service.getConnections("joey", "twitter");
 		assertEquals(2, connections.size());
@@ -142,6 +152,7 @@ public class Neo4jConnectionServiceTests {
 	}
 
 	@Test
+	@Transactional
 	public void shouldListTheConnectionsForUserSortByProviderAndRank() {
 		List<Connection<?>> connections = service.getConnections("joey");
 		assertEquals(3, connections.size());
@@ -149,6 +160,7 @@ public class Neo4jConnectionServiceTests {
 	}
 
 	@Test
+	@Transactional
 	public void shouldCreateNewConnection() {
 		String q = "CREATE (user:User:_User {id: 'UserId'})";
 		neo4jTemplate.query(q, null);
@@ -166,6 +178,7 @@ public class Neo4jConnectionServiceTests {
 		assertEquals("user name", conn.getData().getDisplayName());
 	}
 
+	@Transactional
 	@Test(expected = DuplicateKeyException.class)
 	public void shouldThrowExceptionIfConnectionExists() {
 		Connection<?> userConn = factory.createConnection("c-j", "cj");
@@ -173,6 +186,7 @@ public class Neo4jConnectionServiceTests {
 	}
 
 	@Test
+	@Transactional
 	public void shouldUpdateTheConnection() {
 		Connection<?> conn = service.getConnection("joey", "twitter", "@JeffreyHyman");
 		assertEquals("joey r.", conn.getDisplayName());
@@ -184,6 +198,7 @@ public class Neo4jConnectionServiceTests {
 	}
 
 	@Test
+	@Transactional
 	public void shouldRemoveTheConnection() {
 		service.remove("joey", new ConnectionKey("twitter", "@JeffreyHyman"));
 
@@ -192,6 +207,7 @@ public class Neo4jConnectionServiceTests {
 	}
 
 	@Test
+	@Transactional
 	public void shouldRemoveTheConnectionForAProvider() {
 		service.remove("joey", "twitter");
 

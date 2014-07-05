@@ -3,11 +3,9 @@ package org.springframework.social.connect.neo4j;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.neo4j.graphdb.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.neo4j.conversion.Result;
@@ -18,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.MultiValueMap;
 
+@Service
+@Transactional
 public class Neo4jConnectionService implements ConnectionService {
 
 	private String userLabel = "User";
@@ -26,6 +26,7 @@ public class Neo4jConnectionService implements ConnectionService {
 	private final Neo4jTemplate neo4jTemplate;
 	private final ConnectionConverter converter;
 
+	@Autowired
 	public Neo4jConnectionService(Neo4jTemplate neo4jTemplate, ConnectionConverter converter) {
 		this.converter = converter;
 		this.neo4jTemplate = neo4jTemplate;

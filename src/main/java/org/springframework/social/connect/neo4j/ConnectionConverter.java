@@ -1,19 +1,21 @@
 package org.springframework.social.connect.neo4j;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.encrypt.TextEncryptor;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionData;
 import org.springframework.social.connect.ConnectionFactory;
 import org.springframework.social.connect.ConnectionFactoryLocator;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ConnectionConverter {
 
 	private final TextEncryptor textEncryptor;
 	private final ConnectionFactoryLocator connectionFactoryLocator;
 
-	public ConnectionConverter(
-			ConnectionFactoryLocator connectionFactoryLocator,
-			TextEncryptor textEncryptor) {
+	@Autowired
+	public ConnectionConverter(ConnectionFactoryLocator connectionFactoryLocator, TextEncryptor textEncryptor) {
 		this.textEncryptor = textEncryptor;
 		this.connectionFactoryLocator = connectionFactoryLocator;
 	}
