@@ -16,20 +16,33 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.MultiValueMap;
 
+
 @Service
 @Transactional
 public class Neo4jConnectionService implements ConnectionService {
 
-	private String userLabel = "User";
-	private String userIdProperty = "id";
-
+	private final String userLabel;
+	private final String userIdProperty;
 	private final Neo4jTemplate neo4jTemplate;
 	private final ConnectionConverter converter;
 
+	/**
+	 * 
+	 * @param userLabel - Depends on your project. If you want to add a social connection to a node with the label "Account", pass "Account" to this method. 
+	 * 					  If you are using spring-data-neo4j the classname will be used as a label i.e if your class is Account.java the corresponding Label 
+	 * 					  will be "Account". So make sure to pass in the apropriate value.
+	 * 
+	 * @param userIdProperty - Depends on your Project. If you are identifying your Users by username (i.e the Userclass has a property named "username") than you would pass 
+	 * 						   "username" to this method.
+	 * @param neo4jTemplate
+	 * @param converter
+	 */
 	@Autowired
-	public Neo4jConnectionService(Neo4jTemplate neo4jTemplate, ConnectionConverter converter) {
+	public Neo4jConnectionService(String userLabel, String userIdProperty, Neo4jTemplate neo4jTemplate, ConnectionConverter converter) {
+		this.userLabel = userLabel;
 		this.converter = converter;
 		this.neo4jTemplate = neo4jTemplate;
+		this.userIdProperty = userIdProperty;
 	}
 
 	private boolean connectionExists(String userId, String providerId, String providerUserId) {
@@ -178,30 +191,5 @@ public class Neo4jConnectionService implements ConnectionService {
 		}
 
 		return userIds;
-	}
-	
-	private String join(CharSequence delimiter, Iterable<? extends CharSequence> elements){
-		String result = "";
-		for(CharSequence element : elements) {
-			result += element.toString() + delimiter.toString();
-		}
-		
-		return result.substring(0, result.length() - delimiter.toString().length());
-	}
-
-	public String getUserLabel() {
-		return userLabel;
-	}
-
-	public void setUserLabel(String userLabel) {
-		this.userLabel = userLabel;
-	}
-
-	public String getUserIdProperty() {
-		return userIdProperty;
-	}
-
-	public void setUserIdProperty(String userIdProperty) {
-		this.userIdProperty = userIdProperty;
 	}
 }

@@ -13,7 +13,6 @@ import org.springframework.social.connect.ConnectionFactoryLocator;
 import org.springframework.social.test.FakeConnectionFactoryLocator;
 
 @Configuration
-@ComponentScan(basePackages = {"org.springframework.social.connect.neo4j"})
 public class ApplicationConfig extends Neo4jConfiguration {
 
 	public ApplicationConfig() {
@@ -38,5 +37,15 @@ public class ApplicationConfig extends Neo4jConfiguration {
 	@Bean
 	public ConnectionFactoryLocator connectionFactoryLocator() {
 		return new FakeConnectionFactoryLocator();
+	}
+	
+	@Bean
+	public ConnectionConverter connectionConverter() {
+		return new ConnectionConverter(connectionFactoryLocator(), textEncryptor());
+	}
+	
+	@Bean
+	public ConnectionService connectionService(){
+		return new Neo4jConnectionService("User", "id", neo4jTemplate(), connectionConverter());
 	}
 }

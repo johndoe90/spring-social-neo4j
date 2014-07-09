@@ -1,20 +1,21 @@
 package org.springframework.social.connect.neo4j;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.encrypt.TextEncryptor;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionData;
 import org.springframework.social.connect.ConnectionFactory;
 import org.springframework.social.connect.ConnectionFactoryLocator;
-import org.springframework.stereotype.Component;
 
-@Component
+/**
+ * Converts a SpringSocialConnection to a SocialConnection that can be stored in the database
+ * @author johndoe
+ *
+ */
 public class ConnectionConverter {
 
 	private final TextEncryptor textEncryptor;
 	private final ConnectionFactoryLocator connectionFactoryLocator;
 
-	@Autowired
 	public ConnectionConverter(ConnectionFactoryLocator connectionFactoryLocator, TextEncryptor textEncryptor) {
 		this.textEncryptor = textEncryptor;
 		this.connectionFactoryLocator = connectionFactoryLocator;
@@ -26,8 +27,7 @@ public class ConnectionConverter {
 		}
 
 		ConnectionData connectionData = fillConnectionData(connection);
-		ConnectionFactory<?> connectionFactory = connectionFactoryLocator
-				.getConnectionFactory(connectionData.getProviderId());
+		ConnectionFactory<?> connectionFactory = connectionFactoryLocator.getConnectionFactory(connectionData.getProviderId());
 
 		return connectionFactory.createConnection(connectionData);
 	}
@@ -60,8 +60,7 @@ public class ConnectionConverter {
 	}
 
 	private String decrypt(String encryptedText) {
-		return encryptedText != null ? textEncryptor.decrypt(encryptedText)
-				: encryptedText;
+		return encryptedText != null ? textEncryptor.decrypt(encryptedText) : encryptedText;
 	}
 
 	private String encrypt(String text) {
